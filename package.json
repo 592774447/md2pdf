@@ -1,0 +1,27 @@
+{
+  "name": "md2pdf-web",
+  "version": "2.0",
+  "description": "Markdown 转 PDF 工具 - Web 版本",
+  "main": "server.js",
+  "scripts": {
+    "start": "pm2 start server.js --name md2pdf -i max"
+  },
+  "keywords": [
+    "markdown",
+    "pdf",
+    "converter",
+    "web",
+    "express"
+  ],
+  "author": "任帅",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "markdown-it": "^14.1.0",
+    "puppeteer": "^24.12.0",
+    "pm2": "^5.3.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

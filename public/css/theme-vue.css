@@ -1,0 +1,113 @@
+:root {
+    --primary-color: #42b883;
+    --primary-hover: #2f9d6f;
+    --success-color: #16a34a;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --bg-color: #eefef7;
+    --card-bg: rgba(255, 255, 255, 0.96);
+    --card-surface: rgba(250, 255, 250, 0.98);
+    --card-border: rgba(15, 59, 54, 0.06);
+    --card-shadow: 0 14px 40px rgba(15, 59, 54, 0.06);
+    --text-primary: #0f3b36;
+    --text-secondary: #4e766f;
+    --border-color: #e6f0ec;
+    --shadow-sm: 0 1px 2px rgba(15, 59, 54, 0.04);
+    --shadow-md: 0 8px 24px rgba(15, 59, 54, 0.06);
+}
+
+body {
+    background: radial-gradient(600px 300px at 10% 20%, rgba(124, 184, 132, 0.06), transparent 8%), linear-gradient(135deg, #e8fbf2 0%, #dff7ee 60%, #eafcf7 100%);
+    color: var(--text-primary);
+}
+
+.container {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow);
+}
+
+.header {
+    background: linear-gradient(135deg, #42b883 0%, #2f9d6f 100%);
+    color: #ffffff;
+}
+
+.upload-area {
+    background: var(--bg-color);
+}
+
+.upload-area:hover,
+.upload-area.drag-over {
+    border-color: var(--primary-color);
+    background: linear-gradient(90deg, rgba(66, 184, 131, 0.03), rgba(66, 184, 131, 0.06));
+    transform: translateY(-3px);
+    box-shadow: 0 18px 48px rgba(66, 184, 131, 0.06);
+}
+
+.btn-preview {
+    background: linear-gradient(135deg, #2f9d6f 0%, #42b883 100%);
+    color: #fff
+}
+
+.btn-generate {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #fff
+}
+
+.btn-upload-image {
+    background: linear-gradient(135deg, #16a34a 0%, #059669 100%);
+}
+
+.file-info {
+    background: rgba(66, 184, 131, 0.06);
+    border-color: var(--primary-color);
+}
+
+.upload-card,
+.image-section,
+.config-section,
+.preview-section {
+    background: #f6faf8;
+    border: 1.5px solid #b2d8c7;
+    box-shadow: 0 18px 48px rgba(66, 184, 131, 0.13), 0 2px 8px rgba(15, 59, 54, 0.08);
+    transition: transform 260ms cubic-bezier(.2, .9, .2, 1), box-shadow 260ms ease;
+    transform: none;
+}
+
+.upload-card:hover,
+.image-section:hover,
+.config-section:hover,
+.preview-section:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 36px 120px rgba(66, 184, 131, 0.18), 0 4px 16px rgba(15, 59, 54, 0.12);
+}
+
+.preview-container {
+    border: 1px solid rgba(15, 59, 54, 0.04);
+    box-shadow: 0 8px 30px rgba(15, 59, 54, 0.06);
+}
+
+.btn-cancel {
+    background: linear-gradient(135deg, #ef4444 0%, #f9735a 100%);
+    color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.08);
+}
+
+#themeSelect {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    padding: 6px 8px;
+    border-radius: 6px;
+    min-width: 140px;
+}
+
+#themeSelect option {
+    color: var(--text-primary);
+    background: var(--card-bg);
+}
+
+.footer {
+    border-top: 1px solid rgba(146, 150, 156, 0.6);
+}

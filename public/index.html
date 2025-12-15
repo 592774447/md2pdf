@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown 转 PDF 工具</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>📝</text></svg>">
+    <link rel="stylesheet" href="/css/style.css">
+    <link id="themeLink" rel="stylesheet" href="/css/theme-vue.css">
+    <style>
+        .theme-switcher {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .theme-picker {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .theme-btn {
+            width: 38px;
+            height: 38px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 6px;
+            background: transparent;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 4px;
+            outline: none;
+        }
+
+        .theme-btn .swatch {
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            display: block;
+        }
+
+        .theme-btn.active {
+            box-shadow: 0 0 0 3px rgba(97, 175, 239, 0.18);
+            transform: translateY(-1px);
+        }
+
+        .theme-btn[data-theme="none"] .swatch {
+            background: #6B60BE;
+            box-shadow: inset 0 0 0 2px #cddbe6;
+        }
+
+        .theme-btn[data-theme="theme-vue.css"] .swatch {
+            background: #41b883;
+            box-shadow: inset 0 0 0 2px #cddbe6;
+        }
+
+        .theme-btn[data-theme="theme-atom.css"] .swatch {
+            background: #2b2b2b;
+            box-shadow: inset 0 0 0 2px #cddbe6;
+        }
+
+        .theme-btn[data-theme="theme-minimal.css"] .swatch {
+            background: #6D5291;
+            box-shadow: inset 0 0 0 2px #cddbe6;
+        }
+
+        .theme-btn:focus {
+            box-shadow: 0 0 0 3px rgba(97, 175, 239, 0.12);
+        }
+    </style>
+    <script src="/libs/markdown-it.min.js"></script>
+    <script src="/libs/mermaid.min.js" defer></script>
+    <script id="mathjax-config">
+        window.MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            options: { skipHtmlTags: ['noscript', 'style', 'textarea', 'pre'] },
+            svg: { fontCache: 'global' },
+            startup: { typeset: false }
+        };
+    </script>
+    <script src="/libs/tex-mml-svg.js" defer></script>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">📝 Markdown 转 PDF 工具</h1>
+            <p class="subtitle">专业的 Markdown 文档转换工具、支持主题、Mermaid 图表、数学公式</p>
+            <div class="browser-notice">
+                ⚠️ 请使用 Chrome 或 Edge 浏览器以获得最佳体验
+            </div>
+            <div class="theme-switcher">
+                <label style="color:inherit; font-weight:600; margin-right:8px;">主题</label>
+                <div id="themePicker" class="theme-picker" role="list">
+                    <button class="theme-btn" data-theme="none" title="默认" aria-label="默认主题">
+                        <span class="swatch"></span>
+                    </button>
+                    <button class="theme-btn" data-theme="theme-atom.css" title="暗色" aria-label="Atom 主题">
+                        <span class="swatch"></span>
+                    </button>
+                    <button class="theme-btn" data-theme="theme-vue.css" title="清新" aria-label="Vue 主题">
+                        <span class="swatch"></span>
+                    </button>
+                    <button class="theme-btn" data-theme="theme-minimal.css" title="淡紫" aria-label="Minimal 主题">
+                        <span class="swatch"></span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section class="upload-section">
+                <div class="upload-card">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">📄</div>
+                        <p class="upload-text">点击或拖拽 Markdown 文件到此处</p>
+                        <p class="upload-hint">仅支持 .md 格式文件</p>
+                        <input type="file" id="fileInput" accept=".md,text/markdown" class="visually-hidden">
+                    </div>
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <div class="file-name" id="fileName"></div>
+                        <button class="btn-remove" id="removeFile">✕ 移除</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="config-section">
+                <h2 class="section-title">🎨 导出配置</h2>
+
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label class="config-label">
+                            <span class="label-text">主题的风格</span>
+                            <span class="label-desc">选择 PDF 的主题风格</span>
+                        </label>
+                        <select id="theme" class="config-select">
+                            <option value="vue">💚 Vue 明亮风格</option>
+                            <option value="atom">🌑 Atom 暗色风格</option>
+                            <option value="light">☀️ Light 明亮风格</option>
+                            <option value="github">🐱 GitHub 明亮风格</option>
+                            <option value="monokai">🌃 Monokai 暗色风格</option>
+                            <option value="solarized">🌌 Solarized 暗色风格</option>
+                        </select>
+                    </div>
+
+                    <div class="config-item">
+                        <label class="config-label" id="pageInputLabel">
+                            <span class="label-text" id="pageInputLabelText">页面宽度 (mm)</span>
+                            <span class="label-desc" id="pageInputLabelDesc">设置 PDF 页面的宽度</span>
+                        </label>
+                        <div style="position:relative;min-height:40px;">
+                            <input type="number" id="pageWidth" class="config-input" value="300" min="200" max="1000"
+                                step="10" style="position:absolute;top:0;left:0;width:100%;">
+                            <select id="pageFormat" class="config-input"
+                                style="display:none;position:absolute;top:0;left:0;width:100%;">
+                                <option value="A0">📄 A0 (841×1189mm)</option>
+                                <option value="A1">📄 A1 (594×841mm)</option>
+                                <option value="A2">📄 A2 (420×594mm)</option>
+                                <option value="A3">📄 A3 (297×420mm)</option>
+                                <option value="A4">📄 A4 (210×297mm)</option>
+                                <option value="A5">📄 A5 (148×210mm)</option>
+                                <option value="A6">📄 A6 (105×148mm)</option>
+                                <option value="Legal">📄 Legal (216×356mm)</option>
+                                <option value="Letter">📄 Letter (216×279mm)</option>
+                                <option value="Ledger">📄 Ledger (432×279mm)</option>
+                                <option value="Tabloid">📄 Tabloid (279×432mm)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="config-item">
+                        <label class="config-label">
+                            <span class="label-text">缩放因子</span>
+                            <span class="label-desc">控制 PDF 内容清晰度</span>
+                        </label>
+                        <input type="number" id="scaleFactor" class="config-input" value="2" min="1" max="4" step="1">
+                    </div>
+
+                    <div class="config-item">
+                        <label class="config-label">
+                            <span class="label-text">视口分辨率</span>
+                            <span class="label-desc">渲染 PDF 时的分辨率</span>
+                        </label>
+                        <select id="resolution" class="config-select">
+                            <option value="1K">1K (1920x1080)</option>
+                            <option value="2K" selected>2K (2560x1440)</option>
+                            <option value="4K">4K (3840x2160)</option>
+                        </select>
+                    </div>
+
+                    <div class="config-item">
+                        <label class="config-label">
+                            <span class="label-text">页面边距 (mm)</span>
+                            <span class="label-desc">设置 PDF 的页面边距</span>
+                        </label>
+                        <input type="number" id="margin" class="config-input" value="0" min="0" max="50" step="5">
+                    </div>
+
+                    <div class="config-item">
+                        <label class="config-label">
+                            <span class="label-text">强制单页</span>
+                            <span class="label-desc">导出 PDF 为单页模式</span>
+                        </label>
+                        <label class="switch">
+                            <input type="checkbox" id="forceSinglePage" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <section class="image-section" id="imageSection" style="display: none;">
+                <h2 class="section-title">🖼️ 图片上传</h2>
+                <div class="image-card">
+                    <div id="imageList"></div>
+                    <div class="upload-image-area">
+                        <button class="btn btn-upload-image" id="uploadImageBtn">
+                            📤 上传图片
+                        </button>
+                        <input type="file" id="imageInput" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                            multiple class="visually-hidden">
+                    </div>
+                </div>
+            </section>
+
+            <section class="preview-section">
+                <div class="action-bar">
+                    <button class="btn btn-preview" id="previewBtn" disabled>
+                        👁️ 预览
+                    </button>
+                    <button class="btn btn-generate" id="generateBtn" disabled>
+                        🚀 生成 PDF
+                    </button>
+                </div>
+
+                <div class="preview-container" id="previewContainer" style="display: none;">
+                    <div class="preview-header">
+                        <h3>📄 预览</h3>
+                        <button class="btn-close" id="closePreview">✕</button>
+                    </div>
+                    <div class="preview-content" id="previewContent"></div>
+                </div>
+
+                <div class="progress-container" id="progressContainer" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p class="progress-text" id="progressText">正在生成 PDF...</p>
+                    <button id="cancelBtn" class="btn-cancel" style="display:none;">取消</button>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p class="author">暗色主题、强制单页、缩放因子、视口分辨率、超长的文档及宽度、大量的图表及公式等、均会大幅增加渲染耗时、请耐心等待渲染结束</p>
+        </footer>
+    </div>
+
+    <script src="/js/app.js"></script>
+    <script>
+        (function () {
+            try {
+                const link = document.getElementById('themeLink');
+                const picker = document.getElementById('themePicker');
+                const saved = localStorage.getItem('md2pdf_theme') || 'none';
+
+                function applyTheme(name) {
+                    if (!link) return;
+                    if (name === 'none') {
+                        link.disabled = true;
+                    } else {
+                        link.disabled = false;
+                        link.href = '/css/' + name;
+                    }
+                }
+
+                function setActiveButton(name) {
+                    if (!picker) return;
+                    Array.from(picker.querySelectorAll('.theme-btn')).forEach(btn => {
+                        btn.classList.toggle('active', btn.getAttribute('data-theme') === name);
+                    });
+                }
+
+                applyTheme(saved);
+                setActiveButton(saved);
+
+                if (picker) {
+                    picker.addEventListener('click', function (e) {
+                        const btn = e.target.closest('.theme-btn');
+                        if (!btn) return;
+                        const theme = btn.getAttribute('data-theme') || 'none';
+                        try { localStorage.setItem('md2pdf_theme', theme); } catch (e) { }
+                        applyTheme(theme);
+                        setActiveButton(theme);
+                    });
+                    picker.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            const btn = e.target.closest('.theme-btn');
+                            if (btn) { btn.click(); e.preventDefault(); }
+                        }
+                    });
+                }
+            } catch (e) { console.warn('theme switch init failed', e) }
+        })();
+    </script>
+</body>
+
+</html>
