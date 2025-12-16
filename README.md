@@ -211,7 +211,7 @@ docker run -d --name md2pdf-web --shm-size=4g -p 80:80 md2pdf:web
 
 >本方案适合：不想折腾环境，只想开箱即用的用户, 缺点是镜像体积较大, 需要下载 (约4GB的镜像文件)。
 >
-> 镜像下载地址：https://yw.feihe.com/md2pdf
+> 镜像下载地址：正在准备中 ...
 
 ### 方案二：基于 Gotenberg 自行构建（推荐）
 

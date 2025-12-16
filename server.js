@@ -25,11 +25,24 @@ const THEMES = {
   solarized: { file: 'solarized.css', desc: 'Solarized 暗色风格' }
 };
 
+const HIGHLIGHT_CSS_MAP = {
+  vue: 'vue.min.css',
+  atom: 'atom.min.css',
+  light: 'light.min.css',
+  github: 'github.min.css',
+  monokai: 'monokai.min.css',
+  solarized: 'solarized.min.css'
+};
+
 const mdParser = markdownIt({
   html: true,
   linkify: false,
   typographer: true,
-  breaks: true
+  breaks: true,
+  highlight: function (code, lang) {
+    const langClass = lang ? `language-${lang}` : '';
+    return `<pre><code class="${langClass}">${markdownIt().utils.escapeHtml(code)}</code></pre>\n`;
+  }
 }).use(function (md) {
   const defaultRender = md.renderer.rules.image || function (tokens, idx, options, env, self) {
     return self.renderToken(tokens, idx, options);
@@ -77,6 +90,11 @@ function buildFullHtml(options) {
   const mdFileName = options.fileName || 'markdown';
   const cssFilePath = path.join(__dirname, 'style', THEMES[themeName].file);
   const cssFileUrl = `file:///${cssFilePath.replace(/\\/g, '/')}`;
+  const highlightCssFile = HIGHLIGHT_CSS_MAP[themeName] || 'github.min.css';
+  const highlightCssPath = path.join(__dirname, 'style', highlightCssFile);
+  const highlightCssUrl = `file:///${highlightCssPath.replace(/\\/g, '/')}`;
+  const highlightJsPath = path.join(__dirname, 'public', 'libs', 'highlight.min.js');
+  const highlightJsUrl = `file:///${highlightJsPath.replace(/\\/g, '/')}`;
   const isDarkTheme = ['atom', 'monokai', 'solarized'].includes(themeName);
   const mermaidLocalPath = path.join(__dirname, 'public', 'libs', 'mermaid.min.js');
   const mermaidUrl = `file:///${mermaidLocalPath.replace(/\\/g, '/')}`;
@@ -141,6 +159,7 @@ function buildFullHtml(options) {
       <meta charset="utf-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="stylesheet" href="${cssFileUrl}">
+      <link rel="stylesheet" href="${highlightCssUrl}">
       <title>${mdFileName} - PDF 导出</title>
       <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -157,13 +176,15 @@ function buildFullHtml(options) {
         h1,h2,h3,h4,h5,h6 { margin-top: 1.2em; margin-bottom: 0.6em; }
         p { margin-bottom: 1em; } ul, ol { margin-bottom: 1em; } pre { margin: 1em 0; } table { margin: 1em 0; }
         .mermaid { display: block; margin: 1.5em auto; text-align: center; }
+        .hljs-comment, .hljs-quote { font-style: normal !important; }
         @media print {
           body { padding: 0; height: auto !important; min-height: 100vh; }
           @page :first { margin-top: 0mm; }
           @page { margin: 0mm ${margin}mm; }
         }
       </style>
-        <script src="${mermaidUrl}" defer></script>
+      <script src="${mermaidUrl}" defer></script>
+      <script src="${highlightJsUrl}" defer></script>
       ${hasMath ? `
       <script id="mathjax-config" type="text/javascript">
     window.MathJax = {
@@ -183,6 +204,23 @@ function buildFullHtml(options) {
       <script>
         if (window.mermaid) {
           mermaid.initialize({ startOnLoad: true });
+        }
+        if (window.hljs) {
+          hljs.highlightAll();
+          document.querySelectorAll('code.hljs').forEach(function(el){
+            el.classList.remove('hljs');
+          });
+        } else {
+          setTimeout(function tryHighlight() {
+            if (window.hljs) {
+              hljs.highlightAll();
+              document.querySelectorAll('code.hljs').forEach(function(el){
+                el.classList.remove('hljs');
+              });
+            } else {
+              setTimeout(tryHighlight, 200);
+            }
+          }, 200);
         }
       </script>
     </body>

@@ -205,6 +205,19 @@ pre code {
   border: none;
 }
 
+pre code[class*="language-"]::before {
+  content: attr(class);
+  color: #1A73E8;
+  font-size: 0.75em;
+  margin-bottom: 0.2em;
+  margin-right: 0.5em;
+  padding: 0.1em 0.5em;
+  border-radius: 6px;
+  background: #e8f0fe;
+  float: right;
+  opacity: 0.7;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;

@@ -86,6 +86,15 @@ const THEMES = {
     solarized: { file: 'solarized.css', desc: '🌌 Solarized 暗色风格' }
 };
 
+const HIGHLIGHT_CSS_MAP = {
+    vue: 'vue.min.css',
+    atom: 'atom.min.css',
+    light: 'light.min.css',
+    github: 'github.min.css',
+    monokai: 'monokai.min.css',
+    solarized: 'solarized.min.css'
+};
+
 function handleFileSelect(file) {
     if (!file || !file.name.endsWith('.md')) {
         alert('❌ 请选择有效的 Markdown (.md) 文件');
@@ -211,8 +220,11 @@ function renderMarkdownToHtml(content, theme) {
     const themeFile = THEMES[themeName].file;
     const origin = window.location && window.location.origin ? window.location.origin : '';
     const cssUrl = `${origin}/style/${themeFile}`;
+    const highlightCssFile = HIGHLIGHT_CSS_MAP[themeName] || 'github.min.css';
+    const highlightCss = `${origin}/style/${highlightCssFile}`;
     const mermaidJs = `${origin}/libs/mermaid.min.js`;
     const mathjaxJs = `${origin}/libs/tex-mml-svg.js`;
+    const highlightJs = `${origin}/libs/highlight.min.js`;
     const pageWidth = document.getElementById('pageWidth').value;
     const margin = document.getElementById('margin').value;
     const isDarkTheme = ['atom', 'monokai', 'solarized'].includes(themeName);
@@ -224,72 +236,72 @@ function renderMarkdownToHtml(content, theme) {
       <meta charset="utf-8" />
       <base href="${origin}/">
       <link rel="stylesheet" href="${cssUrl}">
+      <link rel="stylesheet" href="${highlightCss}">
       <style>
         * {
           margin: 0;
           padding: 0;
           box-sizing: border-box;
         }
-
-                html, body {
-                    max-width: ${pageWidth}mm !important;
-                    margin: 0 auto;
-                    padding: ${margin}mm;
-                    height: auto !important;
-                    min-height: auto;
-                    background: ${isDarkTheme ? '#282c34' : '#ffffff'};
-                    overflow-y: auto;
-                }
-
-                .markdown-body {
-                    width: 100%;
-                    box-sizing: border-box;
-                }
-
-                .markdown-body a:hover {
-                    color: inherit !important;
-                    text-decoration: none !important;
-                }
-
-                * {
-                    cursor: default !important;
-                }
-
-                h1, h2, h3, h4, h5, h6 {
-                    margin-top: 1.2em;
-                    margin-bottom: 0.6em;
-                }
-                p { margin-bottom: 1em; }
-                ul, ol { margin-bottom: 1em; }
-                pre { margin: 1em 0; }
-                table { margin: 1em 0; }
-                .mermaid {
-                    display: block;
-                    margin: 1.5em auto;
-                    text-align: center;
-                }
-                @media print {
-                    body {
-                        padding: 0;
-                        height: auto !important;
-                        min-height: 100vh;
-                    }
-                    @page :first { margin-top: 0mm; }
-                    @page { margin: 0mm ${margin}mm; }
-                }
-            </style>
-            <script src="${mermaidJs}" defer></script>
-            ${/\$\$[\s\S]+?\$\$/.test(content) ? `
-            <script id="mathjax-config">
+        html, body {
+            max-width: ${pageWidth}mm !important;
+            margin: 0 auto;
+            padding: ${margin}mm;
+            height: auto !important;
+            min-height: auto;
+            background: ${isDarkTheme ? '#282c34' : '#ffffff'};
+            overflow-y: auto;
+        }
+        .markdown-body {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .markdown-body a:hover {
+            color: inherit !important;
+            text-decoration: none !important;
+        }
+        * {
+            cursor: default !important;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 1.2em;
+            margin-bottom: 0.6em;
+        }
+        p { margin-bottom: 1em; }
+        ul, ol { margin-bottom: 1em; }
+        pre { margin: 1em 0; }
+        table { margin: 1em 0; }
+        .mermaid {
+            display: block;
+            margin: 1.5em auto;
+            text-align: center;
+        }
+        @media print {
+            body {
+                padding: 0;
+                height: auto !important;
+                min-height: 100vh;
+            }
+            @page :first { margin-top: 0mm; }
+            @page { margin: 0mm ${margin}mm; }
+        }
+        .hljs-comment, .hljs-quote {
+          font-style: normal !important;
+        }
+      </style>
+      <script src="${mermaidJs}" defer></script>
+      <script src="${highlightJs}" defer></script>
+      ${/\$\$[\s\S]+?\$\$/.test(content) ? `
+      <script id="mathjax-config">
         window.MathJax = {
             tex: { inlineMath: [['$','$'], ['\\\\(','\\\\)']], displayMath: [['$$','$$'], ['\\\\[','\\\\]']] },
             options: { skipHtmlTags: ['noscript','style','textarea','pre'] },
             svg: { fontCache: 'global' },
             startup: { typeset: false }
         };
-            </script>
-            <script src="${mathjaxJs}" defer></script>
-            ` : ''}
+      </script>
+      <script src="${mathjaxJs}" defer></script>
+      ` : ''}
     </head>
     <body>
       <div class="markdown-body">
@@ -298,6 +310,23 @@ function renderMarkdownToHtml(content, theme) {
       <script>
         if (window.mermaid) {
           mermaid.initialize({ startOnLoad: true, theme: 'default' });
+        }
+        if (window.hljs) {
+          hljs.highlightAll();
+          document.querySelectorAll('code.hljs').forEach(function(el){
+            el.classList.remove('hljs');
+          });
+        } else {
+          setTimeout(function tryHighlight() {
+            if (window.hljs) {
+              hljs.highlightAll();
+              document.querySelectorAll('code.hljs').forEach(function(el){
+                el.classList.remove('hljs');
+              });
+            } else {
+              setTimeout(tryHighlight, 200);
+            }
+          }, 200);
         }
       </script>
     </body>
