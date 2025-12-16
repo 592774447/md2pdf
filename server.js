@@ -2,8 +2,8 @@ const os = require('os');
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
-const puppeteer = require('puppeteer');
 const markdownIt = require('markdown-it');
+const puppeteer = require('puppeteer-core');
 
 const TIMEOUT = 600000;
 const PAGE_WIDTH = 580;
