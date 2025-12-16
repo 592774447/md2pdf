@@ -174,7 +174,7 @@ pre {
   padding: 1.4em;
   border-radius: 10px;
   overflow-x: auto;
-  font-family: "SFMono-Regular", "Consolas", "Liberation Mono", "Fira Code", monospace;
+  font-family: "Consolas", "Cascadia Code", "Fira Code", "JetBrains Mono", "Ubuntu Sans Mono", "Segoe UI Emoji", "Noto Color Emoji";
   font-size: 13px;
   line-height: 1.6;
   margin: 1.8em 0;
@@ -189,7 +189,7 @@ code {
   background: rgba(26, 115, 232, 0.08) !important;
   padding: 0.3em 0.6em;
   border-radius: 5px;
-  font-family: "SFMono-Regular", "Consolas", "Liberation Mono", "Fira Code", monospace;
+  font-family: "Consolas", "Cascadia Code", "Fira Code", "JetBrains Mono", "Ubuntu Sans Mono", "Segoe UI Emoji", "Noto Color Emoji";
   font-size: 13px;
   color: #e53935;
   border: 1px solid rgba(26, 115, 232, 0.1);
@@ -283,7 +283,7 @@ blockquote::before {
   left: 10px;
   font-size: 5em;
   color: rgba(106, 115, 125, 0.05);
-  font-family: Georgia, serif;
+  font-family: "Consolas", "Cascadia Code", "Fira Code", "JetBrains Mono", "Ubuntu Sans Mono", "Segoe UI Emoji", "Noto Color Emoji";
   line-height: 1;
   z-index: 0;
 }
@@ -369,7 +369,7 @@ blockquote p {
 .timestamp {
   color: #6a737d;
   font-size: 0.9em;
-  font-family: "SFMono-Regular", monospace;
+  font-family: "Consolas", "Cascadia Code", "Fira Code", "JetBrains Mono", "Ubuntu Sans Mono", "Segoe UI Emoji", "Noto Color Emoji";
   display: inline-block;
   background: rgba(248, 249, 250, 0.8) !important;
   padding: 0.2em 0.6em;
@@ -412,7 +412,7 @@ blockquote p {
 
 .mermaid svg text {
   fill: #333 !important;
-  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: "Segoe UI", "Segoe UI Emoji", "SF Pro Display", "Apple Color Emoji", "PingFang SC", "Microsoft YaHei", "Noto Color Emoji", sans-serif;
   font-size: 1em;
 }
 
